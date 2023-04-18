@@ -32,4 +32,10 @@ public class GPolygon extends GShape {
 		return new GPolygon();
 	}
 
+	@Override
+	public void moveShape(int x2, int y2) {
+		Polygon polygon = (Polygon) shape;
+		polygon.translate(x2, y2);
+	}
+
 }

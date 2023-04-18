@@ -81,6 +81,7 @@ public class GDrawingPanel extends JPanel {
 	public void finalizeTransforming(int x, int y) {
 		if (toolBar.GetESelectedShape() == GToolBar.EShape.eSelect) {
 			Graphics2D graphics2d = (Graphics2D) this.getGraphics();
+			graphics2d.setXORMode(getBackground());
 			currentShape.draw(graphics2d);
 			currentShape = null;
 			eDrawingState = EDrawingState.eIdel;
@@ -106,19 +107,24 @@ public class GDrawingPanel extends JPanel {
 
 	private class MouseEventHandler implements MouseListener, MouseMotionListener {
 
+		private int initialX;
+		private int initialY;
+
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdel) {
 				if (toolBar.GetESelectedShape() == GToolBar.EShape.eSelect) {
 					currentShape = onShape(e.getPoint());
 					if (currentShape != null) {
+						initialX = e.getX();
+						initialY = e.getY();
 						eDrawingState = EDrawingState.eMoving;
-					}
-				} else {
-					if (!(toolBar.GetESelectedShape().getGShape() instanceof GPolygon)) {
+					} else {
 						prepareTransforming(e.getX(), e.getY());
 						eDrawingState = EDrawingState.eDrawing;
 					}
-
+				} else if (!(toolBar.GetESelectedShape().getGShape() instanceof GPolygon)) {
+					prepareTransforming(e.getX(), e.getY());
+					eDrawingState = EDrawingState.eDrawing;
 				}
 			}
 		}
@@ -127,7 +133,13 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eDrawing) {
 				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eMoving) {
-				// move
+				Graphics2D graphics2d = (Graphics2D) getGraphics();
+				graphics2d.setXORMode(getBackground());
+				currentShape.draw(graphics2d);
+				currentShape.moveShape(e.getX() - initialX, e.getY() - initialY);
+				currentShape.draw(graphics2d);
+				initialX = e.getX();
+				initialY = e.getY();
 			}
 		}
 

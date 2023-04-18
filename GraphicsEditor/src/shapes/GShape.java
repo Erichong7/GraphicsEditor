@@ -15,6 +15,8 @@ public abstract class GShape {
 
 	public abstract void setShape(int x1, int y1, int x2, int y2);
 
+	public abstract void moveShape(int x2, int y2);
+
 	public void addPoint(int x2, int y2) {
 	}
 

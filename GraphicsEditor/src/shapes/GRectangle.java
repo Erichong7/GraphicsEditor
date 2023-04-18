@@ -11,7 +11,6 @@ public class GRectangle extends GShape {
 	public void movePoint(int x2, int y2) {
 		Rectangle rectangle = (Rectangle) shape;
 		rectangle.setFrame(rectangle.getX(), rectangle.getY(), x2 - rectangle.getX(), y2 - rectangle.getY());
-
 	}
 
 	@Override
@@ -22,6 +21,14 @@ public class GRectangle extends GShape {
 	@Override
 	public GShape clone() {
 		return new GRectangle();
+	}
+
+	@Override
+	public void moveShape(int x2, int y2) {
+		Rectangle rectangle = (Rectangle) shape;
+		rectangle.x += x2;
+		rectangle.y += y2;
+		rectangle.setFrame(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
 	}
 
 }

@@ -23,4 +23,10 @@ public class GOval extends GShape {
 		return new GOval();
 	}
 
+	@Override
+	public void moveShape(int x2, int y2) {
+		Ellipse2D ellipse2D = (Ellipse2D) shape;
+		ellipse2D.setFrame(ellipse2D.getX() + x2, ellipse2D.getY() + y2, ellipse2D.getWidth(), ellipse2D.getHeight());
+	}
+
 }

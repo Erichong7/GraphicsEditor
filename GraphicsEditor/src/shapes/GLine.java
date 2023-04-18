@@ -22,6 +22,11 @@ public class GLine extends GShape {
 		return new GLine();
 	}
 
+	@Override
+	public void moveShape(int x2, int y2) {
+
+	}
+
 //	public boolean onShape(Point p) {
 //		return false;
 //	}
