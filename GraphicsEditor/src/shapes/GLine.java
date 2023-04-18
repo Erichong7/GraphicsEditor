@@ -1,5 +1,6 @@
 package shapes;
 
+import java.awt.Point;
 import java.awt.geom.Line2D;
 
 public class GLine extends GShape {
@@ -24,10 +25,16 @@ public class GLine extends GShape {
 
 	@Override
 	public void moveShape(int x2, int y2) {
-
+		Line2D line2D = (Line2D) shape;
+		line2D.setLine(line2D.getX1() + x2, line2D.getY1() + y2, line2D.getX2() + x2, line2D.getY2() + y2);
 	}
 
-//	public boolean onShape(Point p) {
-//		return false;
-//	}
+	public boolean onShape(Point p) {
+		Line2D line2D = (Line2D) shape;
+		if (line2D.ptSegDist(p) < 8) {
+			return true;
+		}
+		return false;
+	}
+
 }

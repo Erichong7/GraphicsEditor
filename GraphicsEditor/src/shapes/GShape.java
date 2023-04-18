@@ -11,6 +11,8 @@ public abstract class GShape {
 	public GShape() {
 	}
 
+	abstract public GShape clone();
+
 	public abstract void movePoint(int x2, int y2);
 
 	public abstract void setShape(int x1, int y1, int x2, int y2);
@@ -19,8 +21,6 @@ public abstract class GShape {
 
 	public void addPoint(int x2, int y2) {
 	}
-
-	abstract public GShape clone();
 
 	public boolean onShape(Point p) {
 		return shape.contains(p.x, p.y);
