@@ -40,7 +40,6 @@ public class GDrawingPanel extends JPanel {
 		eDrawingState = EDrawingState.eIdel;
 		shapes = new Vector<GShape>();
 		selectedShapes = new Vector<GShape>();
-//		anchors = new GAnchor();
 		currentShape = null;
 
 		setBackground(Color.white);
@@ -96,16 +95,10 @@ public class GDrawingPanel extends JPanel {
 		}
 	}
 
-	public void drawAnchor() {
+	public void selectShapes() {
 		anchors = new GAnchor(currentShape);
 		Graphics2D graphics2d = (Graphics2D) getGraphics();
 		anchors.setAnchors();
-		anchors.draw(graphics2d);
-	}
-
-	public void hideAnchor() {
-		Graphics2D graphics2d = (Graphics2D) getGraphics();
-		graphics2d.setXORMode(getBackground());
 		anchors.draw(graphics2d);
 	}
 
@@ -127,7 +120,6 @@ public class GDrawingPanel extends JPanel {
 
 		private int initialX;
 		private int initialY;
-		private boolean anchoring;
 
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdel) {
@@ -136,8 +128,8 @@ public class GDrawingPanel extends JPanel {
 					if (currentShape != null) {
 						initialX = e.getX();
 						initialY = e.getY();
-						drawAnchor();
-						anchoring = true;
+						selectShapes();
+						selectedShapes.add(currentShape);
 						eDrawingState = EDrawingState.eMoving;
 					} else {
 						repaint();
@@ -156,14 +148,21 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eDrawing) {
 				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eMoving) {
-				if (anchoring) {
-					repaint();
-				}
+				repaint();
 				Graphics2D graphics2d = (Graphics2D) getGraphics();
 				graphics2d.setXORMode(getBackground());
-				currentShape.draw(graphics2d);
-				currentShape.moveShape(e.getX() - initialX, e.getY() - initialY);
-				currentShape.draw(graphics2d);
+				if (selectedShapes.size() > 2) {
+					for (GShape shape : selectedShapes) {
+						shape.draw(graphics2d);
+						shape.moveShape(e.getX() - initialX, e.getY() - initialY);
+						shape.draw(graphics2d);
+					}
+				} else {
+					currentShape.draw(graphics2d);
+					currentShape.moveShape(e.getX() - initialX, e.getY() - initialY);
+					currentShape.draw(graphics2d);
+					selectedShapes = new Vector<>();
+				}
 				initialX = e.getX();
 				initialY = e.getY();
 			}
@@ -177,7 +176,7 @@ public class GDrawingPanel extends JPanel {
 					eDrawingState = EDrawingState.eIdel;
 				}
 			} else if (eDrawingState == EDrawingState.eMoving) {
-				drawAnchor();
+				selectShapes();
 				eDrawingState = EDrawingState.eIdel;
 			}
 		}
