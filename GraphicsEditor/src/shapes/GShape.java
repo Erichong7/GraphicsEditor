@@ -23,7 +23,10 @@ public abstract class GShape {
 	}
 
 	public boolean onShape(Point p) {
-		return shape.contains(p.x, p.y);
+		if (shape.contains(p.x, p.y)) {
+			return true;
+		}
+		return false;
 	}
 
 	public void draw(Graphics graphics) {

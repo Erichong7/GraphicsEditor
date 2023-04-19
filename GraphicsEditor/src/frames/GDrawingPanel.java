@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
+import shapes.GAnchor;
 import shapes.GPolygon;
 import shapes.GShape;
 
@@ -24,6 +25,8 @@ public class GDrawingPanel extends JPanel {
 	private EDrawingState eDrawingState;
 	private Vector<GShape> shapes;
 	private GShape currentShape;
+	private GAnchor anchors;
+	private Vector<GShape> selectedShapes;
 
 	// association
 	private GToolBar toolBar;
@@ -36,6 +39,8 @@ public class GDrawingPanel extends JPanel {
 		super();
 		eDrawingState = EDrawingState.eIdel;
 		shapes = new Vector<GShape>();
+		selectedShapes = new Vector<GShape>();
+//		anchors = new GAnchor();
 		currentShape = null;
 
 		setBackground(Color.white);
@@ -91,6 +96,19 @@ public class GDrawingPanel extends JPanel {
 		}
 	}
 
+	public void drawAnchor() {
+		anchors = new GAnchor(currentShape);
+		Graphics2D graphics2d = (Graphics2D) getGraphics();
+		anchors.setAnchors();
+		anchors.draw(graphics2d);
+	}
+
+	public void hideAnchor() {
+		Graphics2D graphics2d = (Graphics2D) getGraphics();
+		graphics2d.setXORMode(getBackground());
+		anchors.draw(graphics2d);
+	}
+
 //	private class Transformer {
 //		public void prepareTransforming() {
 //
@@ -109,6 +127,7 @@ public class GDrawingPanel extends JPanel {
 
 		private int initialX;
 		private int initialY;
+		private boolean anchoring;
 
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdel) {
@@ -117,12 +136,16 @@ public class GDrawingPanel extends JPanel {
 					if (currentShape != null) {
 						initialX = e.getX();
 						initialY = e.getY();
+						drawAnchor();
+						anchoring = true;
 						eDrawingState = EDrawingState.eMoving;
 					} else {
+						repaint();
 						prepareTransforming(e.getX(), e.getY());
 						eDrawingState = EDrawingState.eDrawing;
 					}
 				} else if (!(toolBar.GetESelectedShape().getGShape() instanceof GPolygon)) {
+					repaint();
 					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eDrawing;
 				}
@@ -133,6 +156,9 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eDrawing) {
 				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eMoving) {
+				if (anchoring) {
+					repaint();
+				}
 				Graphics2D graphics2d = (Graphics2D) getGraphics();
 				graphics2d.setXORMode(getBackground());
 				currentShape.draw(graphics2d);
@@ -151,6 +177,7 @@ public class GDrawingPanel extends JPanel {
 					eDrawingState = EDrawingState.eIdel;
 				}
 			} else if (eDrawingState == EDrawingState.eMoving) {
+				drawAnchor();
 				eDrawingState = EDrawingState.eIdel;
 			}
 		}
