@@ -3,6 +3,8 @@ package shapes;
 import java.awt.Point;
 import java.awt.geom.Line2D;
 
+import shapes.GAnchor.EAnchors;
+
 public class GLine extends GShape {
 
 	public GLine() {
@@ -35,6 +37,12 @@ public class GLine extends GShape {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

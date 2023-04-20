@@ -2,6 +2,8 @@ package shapes;
 
 import java.awt.Polygon;
 
+import shapes.GAnchor.EAnchors;
+
 public class GPolygon extends GShape {
 
 	public GPolygon() {
@@ -36,6 +38,12 @@ public class GPolygon extends GShape {
 	public void moveShape(int x2, int y2) {
 		Polygon polygon = (Polygon) shape;
 		polygon.translate(x2, y2);
+	}
+
+	@Override
+	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

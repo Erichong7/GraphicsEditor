@@ -5,8 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 
+import shapes.GAnchor.EAnchors;
+
 public abstract class GShape {
 	protected Shape shape;
+
+	protected int originX;
+	protected int originY;
 
 	public GShape() {
 	}
@@ -19,7 +24,12 @@ public abstract class GShape {
 
 	public abstract void moveShape(int x2, int y2);
 
+	public abstract void resizeShape(EAnchors selectedAnchor, int x, int y);
+
 	public void addPoint(int x2, int y2) {
+	}
+
+	public void setOriginPoint() {
 	}
 
 	public boolean onShape(Point p) {

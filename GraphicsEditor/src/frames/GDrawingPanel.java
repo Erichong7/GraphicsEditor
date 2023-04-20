@@ -12,6 +12,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import shapes.GAnchor;
+import shapes.GAnchor.EAnchors;
 import shapes.GPolygon;
 import shapes.GShape;
 
@@ -19,14 +20,15 @@ public class GDrawingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private enum EDrawingState {
-		eIdel, eDrawing, eMoving, eResizing, eRotating
+		eIdel, eDrawing, eMoving, eResizing, eRotating, eSelecting
 	}
 
 	private EDrawingState eDrawingState;
 	private Vector<GShape> shapes;
 	private GShape currentShape;
 	private GAnchor anchors;
-	private Vector<GShape> selectedShapes;
+	private EAnchors selectedAnchor;
+//	private Vector<GShape> selectedShapes;
 
 	// association
 	private GToolBar toolBar;
@@ -39,7 +41,7 @@ public class GDrawingPanel extends JPanel {
 		super();
 		eDrawingState = EDrawingState.eIdel;
 		shapes = new Vector<GShape>();
-		selectedShapes = new Vector<GShape>();
+//		selectedShapes = new Vector<GShape>();
 		currentShape = null;
 
 		setBackground(Color.white);
@@ -56,13 +58,14 @@ public class GDrawingPanel extends JPanel {
 		}
 	}
 
-	public GShape onShape(Point point) {
+	public void onShape(Point point) {
 		for (GShape shape : shapes) {
 			if (shape.onShape(point)) {
-				return shape;
+				drawAnchor(shape);
+				currentShape = shape;
+				return;
 			}
 		}
-		return null;
 	}
 
 	public void prepareTransforming(int x, int y) {
@@ -83,38 +86,27 @@ public class GDrawingPanel extends JPanel {
 	}
 
 	public void finalizeTransforming(int x, int y) {
-		if (toolBar.GetESelectedShape() == GToolBar.EShape.eSelect) {
+		if (eDrawingState == EDrawingState.eDrawing) {
+			shapes.add(currentShape);
+			currentShape = null;
+		} else if (eDrawingState == EDrawingState.eSelecting) {
 			Graphics2D graphics2d = (Graphics2D) this.getGraphics();
 			graphics2d.setXORMode(getBackground());
 			currentShape.draw(graphics2d);
 			currentShape = null;
-			eDrawingState = EDrawingState.eIdel;
-		} else {
+		} else if (eDrawingState == EDrawingState.eMoving) {
 			shapes.add(currentShape);
 			currentShape = null;
+		} else if (eDrawingState == EDrawingState.eResizing) {
 		}
 	}
 
-	public void selectShapes() {
-		anchors = new GAnchor(currentShape);
+	public void drawAnchor(GShape shape) {
+		anchors = new GAnchor(shape);
 		Graphics2D graphics2d = (Graphics2D) getGraphics();
 		anchors.setAnchors();
 		anchors.draw(graphics2d);
 	}
-
-//	private class Transformer {
-//		public void prepareTransforming() {
-//
-//		}
-//
-//		public void keepTransforming() {
-//
-//		}
-//
-//		public void finalizeTransforming() {
-//
-//		}
-//	}
 
 	private class MouseEventHandler implements MouseListener, MouseMotionListener {
 
@@ -124,22 +116,28 @@ public class GDrawingPanel extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdel) {
 				if (toolBar.GetESelectedShape() == GToolBar.EShape.eSelect) {
-					currentShape = onShape(e.getPoint());
-					if (currentShape != null) {
+					onShape(e.getPoint());
+					if (currentShape != null) { // move
 						initialX = e.getX();
 						initialY = e.getY();
-						selectShapes();
-						selectedShapes.add(currentShape);
-						eDrawingState = EDrawingState.eMoving;
+						selectedAnchor = anchors.onShape(e.getPoint());
+						if (selectedAnchor != null) {
+							eDrawingState = EDrawingState.eResizing;
+						} else if (currentShape.onShape(e.getPoint())) {
+							eDrawingState = EDrawingState.eMoving;
+						} else {
+							repaint();
+							currentShape = null;
+						}
 					} else {
 						repaint();
+						eDrawingState = EDrawingState.eSelecting;
 						prepareTransforming(e.getX(), e.getY());
-						eDrawingState = EDrawingState.eDrawing;
 					}
 				} else if (!(toolBar.GetESelectedShape().getGShape() instanceof GPolygon)) {
 					repaint();
-					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eDrawing;
+					prepareTransforming(e.getX(), e.getY());
 				}
 			}
 		}
@@ -149,22 +147,16 @@ public class GDrawingPanel extends JPanel {
 				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eMoving) {
 				repaint();
-				Graphics2D graphics2d = (Graphics2D) getGraphics();
-				graphics2d.setXORMode(getBackground());
-				if (selectedShapes.size() > 2) {
-					for (GShape shape : selectedShapes) {
-						shape.draw(graphics2d);
-						shape.moveShape(e.getX() - initialX, e.getY() - initialY);
-						shape.draw(graphics2d);
-					}
-				} else {
-					currentShape.draw(graphics2d);
-					currentShape.moveShape(e.getX() - initialX, e.getY() - initialY);
-					currentShape.draw(graphics2d);
-					selectedShapes = new Vector<>();
-				}
+				currentShape.moveShape(e.getX() - initialX, e.getY() - initialY);
+//				selectedShapes = new Vector<>();
 				initialX = e.getX();
 				initialY = e.getY();
+			} else if (eDrawingState == EDrawingState.eSelecting) {
+				keepTransforming(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eResizing) {
+				repaint();
+				currentShape.resizeShape(selectedAnchor, e.getX(), e.getY());
+				finalizeTransforming(e.getX(), e.getY());
 			}
 		}
 
@@ -176,7 +168,15 @@ public class GDrawingPanel extends JPanel {
 					eDrawingState = EDrawingState.eIdel;
 				}
 			} else if (eDrawingState == EDrawingState.eMoving) {
-				selectShapes();
+				drawAnchor(currentShape);
+				eDrawingState = EDrawingState.eIdel;
+			} else if (eDrawingState == EDrawingState.eSelecting) {
+				finalizeTransforming(e.getX(), e.getY());
+				eDrawingState = EDrawingState.eIdel;
+			} else if (eDrawingState == EDrawingState.eResizing) {
+				finalizeTransforming(e.getX(), e.getY());
+				currentShape.setOriginPoint();
+				drawAnchor(currentShape);
 				eDrawingState = EDrawingState.eIdel;
 			}
 		}
@@ -207,8 +207,8 @@ public class GDrawingPanel extends JPanel {
 		private void mouse1Clicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdel) {
 				if (toolBar.GetESelectedShape().getGShape() instanceof GPolygon) {
-					prepareTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eDrawing;
+					prepareTransforming(e.getX(), e.getY());
 				}
 			} else if (eDrawingState == EDrawingState.eDrawing) {
 				if (toolBar.GetESelectedShape().getGShape() instanceof GPolygon) {

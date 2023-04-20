@@ -3,32 +3,36 @@ package shapes;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 
 public class GAnchor {
 
 	public enum EAnchors {
-		N(new Rectangle(0, 0, 0, 0)), NW(new Rectangle(0, 0, 0, 0)), NE(new Rectangle(0, 0, 0, 0)),
-		S(new Rectangle(0, 0, 0, 0)), SW(new Rectangle(0, 0, 0, 0)), SE(new Rectangle(0, 0, 0, 0)),
-		W(new Rectangle(0, 0, 0, 0)), E(new Rectangle(0, 0, 0, 0));
+		N(new Ellipse2D.Double(0, 0, 0, 0)), NW(new Ellipse2D.Double(0, 0, 0, 0)), NE(new Ellipse2D.Double(0, 0, 0, 0)),
+		S(new Ellipse2D.Double(0, 0, 0, 0)), SW(new Ellipse2D.Double(0, 0, 0, 0)), SE(new Ellipse2D.Double(0, 0, 0, 0)),
+		W(new Ellipse2D.Double(0, 0, 0, 0)), E(new Ellipse2D.Double(0, 0, 0, 0));
 
-		private Rectangle anchor;
+		private Ellipse2D anchor;
 
-		private EAnchors(Rectangle anchor) {
+		private EAnchors(Ellipse2D anchor) {
 			this.anchor = anchor;
 		}
 
-		public Rectangle getEllipse() {
+		public Ellipse2D getEllipse() {
 			return anchor;
 		}
 
 		public void setEllipse(int x, int y, int l) {
 			anchor.setFrame(x, y, l, l);
 		}
+
 	}
 
-	static Rectangle shapeBounds;
-	private int l = 8; // Anchor 크기 정하기
+	private static Rectangle shapeBounds;
+	private int l = 12; // Anchor 크기 정하기
 
 	public GAnchor(GShape shape) {
 		shapeBounds = shape.shape.getBounds();
@@ -78,10 +82,22 @@ public class GAnchor {
 		}
 	}
 
+	public EAnchors onShape(Point p) {
+		for (EAnchors anchor : EAnchors.values()) {
+			Shape shape = anchor.getEllipse();
+			if (shape.contains(p.x, p.y)) {
+				return anchor;
+			}
+		}
+		return null;
+	}
+
 	public void draw(Graphics graphics) {
 		Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.draw(shapeBounds);
 		for (EAnchors anchor : EAnchors.values()) {
+			graphics2d.setColor(Color.WHITE);
+			graphics2d.fill(anchor.getEllipse());
 			graphics2d.setColor(Color.BLACK);
 			graphics2d.draw(anchor.getEllipse());
 		}

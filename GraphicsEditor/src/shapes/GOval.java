@@ -2,6 +2,8 @@ package shapes;
 
 import java.awt.geom.Ellipse2D;
 
+import shapes.GAnchor.EAnchors;
+
 public class GOval extends GShape {
 
 	public GOval() {
@@ -27,6 +29,12 @@ public class GOval extends GShape {
 	public void moveShape(int x2, int y2) {
 		Ellipse2D ellipse2D = (Ellipse2D) shape;
 		ellipse2D.setFrame(ellipse2D.getX() + x2, ellipse2D.getY() + y2, ellipse2D.getWidth(), ellipse2D.getHeight());
+	}
+
+	@Override
+	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
