@@ -6,8 +6,6 @@ import shapes.GAnchor.EAnchors;
 
 public class GRectangle extends GShape {
 
-	private int originX, originY;
-
 	public GRectangle() {
 
 	}
@@ -23,12 +21,6 @@ public class GRectangle extends GShape {
 		} else {
 			rectangle.setFrame(originX, originY, x2 - originX, y2 - originY);
 		}
-	}
-
-	public void setOriginPoint() {
-		Rectangle rectangle = (Rectangle) shape;
-		originX = rectangle.x;
-		originY = rectangle.y;
 	}
 
 	@Override
@@ -53,37 +45,35 @@ public class GRectangle extends GShape {
 	}
 
 	@Override
-	public void resizeShape(EAnchors selectedAnchor, int x2, int y2) {
+	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
 		Rectangle rectangle = (Rectangle) shape;
 		switch (selectedAnchor) {
 		case N:
-			rectangle.setFrame(rectangle.getX(), y2, rectangle.getWidth(),
-					rectangle.getHeight() + rectangle.getY() - y2);
+			rectangle.setFrame(rectangle.getX(), rectangle.getY() + y, rectangle.getWidth(), rectangle.getHeight() - y);
 			break;
 		case NW:
-			rectangle.setFrame(x2, y2, rectangle.getWidth() + rectangle.getX() - x2,
-					rectangle.getHeight() + rectangle.getY() - y2);
+			rectangle.setFrame(rectangle.getX() + x, rectangle.getY() + y, rectangle.getWidth() - x,
+					rectangle.getHeight() - y);
 			break;
 		case NE:
-			rectangle.setFrame(rectangle.getX(), y2, x2 - rectangle.getX(),
-					rectangle.getHeight() + rectangle.getY() - y2);
+			rectangle.setFrame(rectangle.getX(), rectangle.getY() + y, rectangle.getWidth() + x,
+					rectangle.getHeight() - y);
 			break;
 		case S:
-			rectangle.setFrame(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), y2 - rectangle.getY());
+			rectangle.setFrame(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight() + y);
 			break;
 		case SW:
-			rectangle.setFrame(x2, rectangle.getY(), rectangle.getX() + rectangle.getWidth() - x2,
-					y2 - rectangle.getY());
+			rectangle.setFrame(rectangle.getX() + x, rectangle.getY(), rectangle.getWidth() - x,
+					rectangle.getHeight() + y);
 			break;
 		case SE:
-			movePoint(x2, y2);
+			rectangle.setFrame(rectangle.getX(), rectangle.getY(), rectangle.getWidth() + x, rectangle.getHeight() + y);
 			break;
 		case W:
-			rectangle.setFrame(x2, rectangle.getY(), rectangle.getWidth() + rectangle.getX() - x2,
-					rectangle.getHeight());
+			rectangle.setFrame(rectangle.getX() + x, rectangle.getY(), rectangle.getWidth() - x, rectangle.getHeight());
 			break;
 		case E:
-			rectangle.setFrame(rectangle.getX(), rectangle.getY(), x2 - rectangle.getX(), rectangle.getHeight());
+			rectangle.setFrame(rectangle.getX(), rectangle.getY(), rectangle.getWidth() + x, rectangle.getHeight());
 			break;
 		}
 	}

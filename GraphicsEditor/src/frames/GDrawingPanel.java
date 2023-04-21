@@ -155,7 +155,9 @@ public class GDrawingPanel extends JPanel {
 				keepTransforming(e.getX(), e.getY());
 			} else if (eDrawingState == EDrawingState.eResizing) {
 				repaint();
-				currentShape.resizeShape(selectedAnchor, e.getX(), e.getY());
+				currentShape.resizeShape(selectedAnchor, e.getX() - initialX, e.getY() - initialY);
+				initialX = e.getX();
+				initialY = e.getY();
 				finalizeTransforming(e.getX(), e.getY());
 			}
 		}
@@ -175,7 +177,7 @@ public class GDrawingPanel extends JPanel {
 				eDrawingState = EDrawingState.eIdel;
 			} else if (eDrawingState == EDrawingState.eResizing) {
 				finalizeTransforming(e.getX(), e.getY());
-				currentShape.setOriginPoint();
+//				currentShape.setOriginPoint();
 				drawAnchor(currentShape);
 				eDrawingState = EDrawingState.eIdel;
 			}
