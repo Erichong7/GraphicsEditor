@@ -6,6 +6,8 @@ import shapes.GAnchor.EAnchors;
 
 public class GPolygon extends GShape {
 
+	private int px, py;
+
 	public GPolygon() {
 	}
 
@@ -35,15 +37,23 @@ public class GPolygon extends GShape {
 	}
 
 	@Override
-	public void moveShape(int x2, int y2) {
+	public void moveShape(int x, int y) {
 		Polygon polygon = (Polygon) shape;
-		polygon.translate(x2, y2);
+		polygon.translate(x - px, y - py);
+		px = x;
+		py = y;
 	}
 
 	@Override
 	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setPoint(int x, int y) {
+		px = x;
+		py = y;
 	}
 
 }

@@ -10,9 +10,6 @@ import shapes.GAnchor.EAnchors;
 public abstract class GShape {
 	protected Shape shape;
 
-	protected int originX;
-	protected int originY;
-
 	public GShape() {
 	}
 
@@ -26,10 +23,9 @@ public abstract class GShape {
 
 	public abstract void resizeShape(EAnchors selectedAnchor, int x, int y);
 
-	public void addPoint(int x2, int y2) {
-	}
+	public abstract void setPoint(int x, int y);
 
-	public void setOriginPoint() {
+	public void addPoint(int x2, int y2) {
 	}
 
 	public boolean onShape(Point p) {

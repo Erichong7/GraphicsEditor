@@ -1,4 +1,5 @@
 package main;
+
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -18,8 +19,8 @@ public class GMainFrame extends JFrame {
 	public GMainFrame() {
 		// attributes
 		setTitle("Title");
+		setSize(800, 600);
 		setLocationRelativeTo(null);
-		setSize(600, 400);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// components 자식 부품같은 것

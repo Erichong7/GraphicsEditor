@@ -7,6 +7,8 @@ import shapes.GAnchor.EAnchors;
 
 public class GLine extends GShape {
 
+	private int px, py;
+
 	public GLine() {
 	}
 
@@ -43,6 +45,12 @@ public class GLine extends GShape {
 	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setPoint(int x, int y) {
+		px = x;
+		py = y;
 	}
 
 }
