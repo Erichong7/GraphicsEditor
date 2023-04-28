@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 
@@ -19,6 +20,8 @@ public class GToolBar extends JToolBar {
 
 	private ButtonGroup buttonGroup;
 	private JRadioButton selectButton;
+	public JButton undoButton;
+	public JButton redoButton;
 
 	public enum EShape {
 		eSelect("Select", new GSelect()), eRectangle("Rectangle", new GRectangle()), eOval("Oval", new GOval()),
@@ -64,8 +67,14 @@ public class GToolBar extends JToolBar {
 			buttonShape.setActionCommand(eButtonShape.toString());
 			buttonShape.addActionListener(ActionHandler);
 			buttonGroup.add(buttonShape);
-
 		}
+
+		undoButton = new JButton("UNDO");
+		add(undoButton);
+
+		redoButton = new JButton("REDO");
+		add(redoButton);
+
 		resetESelectedShape();
 	}
 

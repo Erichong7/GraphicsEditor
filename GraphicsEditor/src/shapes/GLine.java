@@ -35,14 +35,23 @@ public class GLine extends GShape {
 		py = y;
 	}
 
-	public void moveShape(int x2, int y2) {
+	public void moveShape(int x, int y) {
 		Line2D line2D = (Line2D) shape;
-		line2D.setLine(line2D.getX1() + x2, line2D.getY1() + y2, line2D.getX2() + x2, line2D.getY2() + y2);
+		line2D.setLine(line2D.getX1() + x - px, line2D.getY1() + y - py, line2D.getX2() + x - px,
+				line2D.getY2() + y - py);
+		px = x;
+		py = y;
 	}
 
 	public void resizeShape(EAnchors selectedAnchor, int x, int y) {
-		// TODO Auto-generated method stub
+		Line2D line = (Line2D) shape;
+		int dx = x - px;
+		int dy = y - py;
 
+		// <-- Line Resize부분
+
+		px = x;
+		py = y;
 	}
 
 	public boolean onShape(Point p) {

@@ -1,13 +1,18 @@
 package frames;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 import javax.swing.JPanel;
 
@@ -24,22 +29,41 @@ public class GDrawingPanel extends JPanel {
 	}
 
 	private EDrawingState eDrawingState;
-	private Vector<GShape> shapes;
+	static Stack<GShape> shapes;
 	private GShape currentShape;
 	private GAnchor anchors;
 	private EAnchors selectedAnchor;
+	private Queue<GShape> undoShapes;
 
 	// association
 	private GToolBar toolBar;
 
 	public void setToolbar(GToolBar toolBar) {
 		this.toolBar = toolBar;
+		toolBar.undoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (shapes.size() != 0) {
+					undoShapes.add(shapes.pop());
+					repaint();
+				}
+			}
+		});
+		toolBar.redoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (undoShapes.size() > 0) {
+					shapes.add(undoShapes.poll());
+					repaint();
+				}
+			}
+		});
 	}
 
 	public GDrawingPanel() {
 		super();
 		eDrawingState = EDrawingState.eIdel;
-		shapes = new Vector<GShape>();
+		shapes = new Stack<GShape>();
+		undoShapes = new LinkedList<>();
+
 		currentShape = null;
 
 		setBackground(Color.white);
@@ -92,9 +116,12 @@ public class GDrawingPanel extends JPanel {
 			currentShape.movePoint(x, y);
 			currentShape.draw(graphics2d);
 		} else if (eDrawingState == EDrawingState.eMoving) {
-			currentShape.draw(graphics2d);
-			currentShape.moveShape(x, y);
-			currentShape.draw(graphics2d);
+			Dimension d = getSize();
+			if (x > 0 && x < d.width && y > 0 && y < d.height) {
+				currentShape.draw(graphics2d);
+				currentShape.moveShape(x, y);
+				currentShape.draw(graphics2d);
+			}
 		} else if (eDrawingState == EDrawingState.eResizing) {
 			currentShape.resizeShape(selectedAnchor, x, y);
 		}
@@ -169,7 +196,6 @@ public class GDrawingPanel extends JPanel {
 			} else if (eDrawingState == EDrawingState.eResizing) {
 				repaint();
 				keepTransforming(e.getX(), e.getY());
-//				finalizeTransforming(e.getX(), e.getY());
 			}
 		}
 
