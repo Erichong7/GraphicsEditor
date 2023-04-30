@@ -1,14 +1,17 @@
 package shapes;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 
+import frames.GToolBar.EColor;
 import shapes.GAnchor.EAnchors;
 
 public abstract class GShape {
 	protected Shape shape;
+	private Graphics2D graphics2d;
 
 	public GShape() {
 	}
@@ -35,9 +38,33 @@ public abstract class GShape {
 		return false;
 	}
 
+	private boolean fillClicked = false;
+	private EColor selectedColor;
+
+	public void fill() {
+		graphics2d.fill(shape);
+		fillClicked = true;
+	}
+
+	public void setSelectedColor(EColor selectedColor) {
+		this.selectedColor = selectedColor;
+	}
+
 	public void draw(Graphics graphics) {
-		Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.draw(shape);
+		graphics2d = (Graphics2D) graphics;
+		if (selectedColor == EColor.eBlack) {
+			graphics2d.setColor(Color.BLACK);
+		} else if (selectedColor == EColor.eRed) {
+			graphics2d.setColor(Color.RED);
+		} else if (selectedColor == EColor.eBlue) {
+			graphics2d.setColor(Color.BLUE);
+		}
+		if (fillClicked) {
+			fill();
+		} else {
+			graphics2d.draw(shape);
+		}
+
 	}
 
 }
